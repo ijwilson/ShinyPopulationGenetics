@@ -1,11 +1,11 @@
 
-sim <- function(gens,start,s) {
+sim <- function(gens, start, s) {
   ss <- sum(start)
   generation <- function(n) {
     p <- c(2*n[1]+n[2],n[2]+2*n[3])
     sel <- c(s[1]*p[1]*p[1],s[2]*2*p[1]*p[2],s[3]*p[2]*p[2])
     sel <- sel/sum(sel)
-    x <- rmultinom(1,ss,prob=sel)
+    x <- rmultinom(1, ss, prob=sel)
     x[,1] 
   }
   st <- start
@@ -37,7 +37,7 @@ getFirstAbsorption <- function(xx) {
       ret[col] <- -min(which(xx[,col]==1))
     }
   }
-return(ret)
+  return(ret)
 }
 
 
