@@ -1,5 +1,6 @@
 # ShinyPopulationGenetics
 Shiny applications for teaching population genetics
 
----------------------|------------------------------
-SelectionBottleneck  | Selction through a bottleneck                
+|Title                |                               |
+|---------------------|-------------------------------|
+|BottleneckSelection  | Selection through a bottleneck|                
