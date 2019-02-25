@@ -1,33 +1,28 @@
-bottlesim <- function(generations, f, start, s) {
-  generation <- function(n, ss) {
+
+sim <- function(gens,start,s) {
+  ss <- sum(start)
+  generation <- function(n) {
     p <- c(2*n[1]+n[2],n[2]+2*n[3])
     sel <- c(s[1]*p[1]*p[1],s[2]*2*p[1]*p[2],s[3]*p[2]*p[2])
     sel <- sel/sum(sel)
-    x <- rmultinom(1, ss, prob=sel)
+    x <- rmultinom(1,ss,prob=sel)
     x[,1] 
   }
-  sample_size <- c(rep(sum(start), generations[1]),
-                   rep(as.integer(f*sum(start)), generations[2]),
-                   rep(sum(start), generations[3])
-  )
-  gen <- sum(generations)
   st <- start
-  pp <- numeric(gen)
-  for (i in 1:gen) {
-    xx <- generation(st, sample_size[i])
+  pp <- numeric(gens)
+  for (i in 1:gens) {
+    xx <- generation(st)
     pp[i] <- c(xx[2]+2*xx[3])/(2*sum(xx))
     st <- xx
-    if (st[1]==sample_size[i]) {
+    if (st[1]==ss) {
       break
-    } else if (st[3]==sample_size[i]) {
-      pp[i:gen] <- 1
+    } else if (st[3]==ss) {
+      pp[i:gens] <- 1
       break
     }
   }
   pp
 }
-
-
 
 getFirstAbsorption <- function(xx) {
   ## Find the row for which p is first zero.  
@@ -42,7 +37,7 @@ getFirstAbsorption <- function(xx) {
       ret[col] <- -min(which(xx[,col]==1))
     }
   }
-  return(ret)
+return(ret)
 }
 
 
@@ -63,16 +58,11 @@ shinyServer(function(input, output) {
   
   output$distPlot <- renderPlot({
     ## Generates the allele frequency paths and plot    
-    initial <- as.integer(isolate(input$initial))
-  
-    final <- initial
     N <- as.integer(isolate(input$N))
-    alpha <- 90
+    alpha <- 80
     myselection <- isolate(input$selection)
     pops <- isolate(input$pops)
-    generations <- c(initial, isolate(input$duration), final)   
-    gens <- sum(generations)
-    f <- isolate(input$fraction)/100               ## fraction for the bottleneck
+    generations <- isolate(input$gens)
     s <- isolate(input$s)
     startingP <- isolate(input$startingP)
     input$run
@@ -89,17 +79,17 @@ shinyServer(function(input, output) {
     if (startingP==1) {
       start <- c(N-1,1,0) 
     } else if (startingP==2) {
-        start <- rmultinom(1, N, prob=c(0.99*0.99,2*0.01*0.99,0.01*0.01))
+        start <- rmultinom(1,N,prob=c(0.99*0.99,2*0.01*0.99,0.01*0.01))
     } else if (startingP==3) {
-        start <- rmultinom(1, N, prob=c(0.95*0.95,2*0.05*0.95,0.05*0.05))
+        start <- rmultinom(1,N,prob=c(0.95*0.95,2*0.05*0.95,0.05*0.05))
     } else {
-        start <- rmultinom(1, N, prob=c(0.25,0.5,0.25))
+        start <- rmultinom(1,N,prob=c(0.25,0.5,0.25))
     }
-    
+
    p <-  replicate(pops,
-                   bottlesim(generations, f=f, start=start, s=sels))
+                   sim(generations, start=start, s=sels))
    breaks <- seq(0,1,by=0.02)
-   hs <- hist(p[gens, ], breaks=breaks, plot=FALSE)
+   hs <- hist(p[generations,], breaks=breaks, plot=FALSE)
    
    old.par <- par(no.readonly=TRUE)
    mar.default <- par('mar')
@@ -109,14 +99,13 @@ shinyServer(function(input, output) {
    mar.right[2] <- 0
    
    # Main plot 
- #  par (fig=c(0,0.8,0,1.0), mar=mar.left)
-   plot(NULL, type="l", xlim=c(0, gens)
+   par (fig=c(0,0.8,0,1.0), mar=mar.left)
+   plot(NULL, type="l", xlim=c(0,input$gens)
         ,ylim=c(0,1)
         ,ylab="Frequency of Variant Allele"
         ,xlab="Generation", axes=FALSE
         ,cex.lab=1.6, cex.axis=1.6
    )
-   rect(generations[1], -0.1, generations[2]+generations[1], 1.1, col="lightgrey", border=NA)
 
     apply(p, 2, function(x)  {
       succ <- 1+(x[generations]>0) + (x[generations]==1.0);
@@ -125,34 +114,34 @@ shinyServer(function(input, output) {
         rgb(0, 255, 0, max=255, alpha=alpha),
         rgb(0, 0, 255, max=255, alpha=alpha))[succ],lwd=2)
        })
-#  text(generations, 0.97, paste(sum(p[generations,]==1),"fixed"),col="black")
-#   text(generations, 0.03, paste(sum(p[generations,]==0),"lost"),col="black")
+   text(generations, 0.97, paste(sum(p[generations,]==1),"fixed"),col="black")
+   text(generations, 0.03, paste(sum(p[generations,]==0),"lost"),col="black")
  
-#   firstAbsorption <- getFirstAbsorption(p)
-#   ones <- sum(firstAbsorption<0)
-#   segregating <- sum(firstAbsorption==0)
+   firstAbsorption <- getFirstAbsorption(p)
+   ones <- sum(firstAbsorption<0)
+   segregating <- sum(firstAbsorption==0)
    
-#   if (sum(firstAbsorption>0) > 0) {
-#    rug(jitter(firstAbsorption[firstAbsorption>0]),col="red",ticksize=-0.03,lwd=2)
-#    text(median(firstAbsorption[firstAbsorption>0]), -0.02, "*", pch=1, col="red", cex=2 )
-#   }
- #  if (sum(firstAbsorption<0) > 0) {
- #    rug(jitter(-firstAbsorption[firstAbsorption<0]),side=3,col="blue",ticksize=-0.03,lwd=2)
-#     text(median(-firstAbsorption[firstAbsorption<0]), 1.02, "*", pch=1, col="blue", cex=2 )
-#   }
+   if (sum(firstAbsorption>0) > 0) {
+    rug(jitter(firstAbsorption[firstAbsorption>0]),col="red",ticksize=-0.03,lwd=2)
+    text(median(firstAbsorption[firstAbsorption>0]), -0.02, "*", pch=1, col="red", cex=2 )
+   }
+   if (sum(firstAbsorption<0) > 0) {
+     rug(jitter(-firstAbsorption[firstAbsorption<0]),side=3,col="blue",ticksize=-0.03,lwd=2)
+     text(median(-firstAbsorption[firstAbsorption<0]), 1.02, "*", pch=1, col="blue", cex=2 )
+   }
    
     axis(1);axis(2)
  
- #par (fig=c(0.8,1.0,0.0,1.0), mar=mar.right, new=TRUE)
- #plot (NA, type='n', axes=FALSE, yaxt='n',
-#       xlab='Frequency', ylab=NA, main=NA,
-#       xlim=c(0,max(hs$counts)),
-#       ylim=c(1,length(hs$counts)))
- #arrows(rep(0,length(hs$counts)), 1:length(hs$counts),
-#        hs$counts, 1:length(hs$counts),
-#        length=0,angle=0)
- #axis(1)
- #par(old.par)
+ par (fig=c(0.8,1.0,0.0,1.0), mar=mar.right, new=TRUE)
+ plot (NA, type='n', axes=FALSE, yaxt='n',
+       xlab='Frequency', ylab=NA, main=NA,
+       xlim=c(0,max(hs$counts)),
+       ylim=c(1,length(hs$counts)))
+ arrows(rep(0,length(hs$counts)), 1:length(hs$counts),
+        hs$counts, 1:length(hs$counts),
+        length=0,angle=0)
+ axis(1)
+ par(old.par)
 
   },height=600,width=900)
 })
