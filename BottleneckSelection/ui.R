@@ -1,3 +1,4 @@
+
 library(shiny)
 # Define UI for application that plots simulations
 shinyUI(fluidPage(
@@ -16,24 +17,25 @@ shinyUI(fluidPage(
            selectInput(inputId = "N", label="Standard Population Size",
                        choices = list(100, 200, 500, 1000, 5000)
                        , selected=1000),
+
             uiOutput("ui")  ## the dynamic ui component
     ),
     column(4,
+
+           numericInput("initial", "Before Bottleneck  (generations)", value=20 , min=1, max=100, step=10),
            
+           numericInput(inputId = "duration", "Bottleneck Duration",
+                        value=10, min=2, max=100),
            numericInput(inputId = "fraction", 
                         label="bottleneck Severity %",
-                        value=20, min=1, max=100),
-           
-           numericInput(inputId = "duration", "Bottleneck Duration (generations)",
-                        value=10, min=2, max=100),
-           selectInput("startingP",
-                       "Starting variant frequency",
-                       choices=list("One copy"=1, "1%"=2, "5%"=3, "50%"=4)
-                       , selected=4)
+                        value=20, min=1, max=100)
     ),
    column(4,
-          numericInput("gens", "Number of Generations", value=100 , min=100, max=1000, step=100),
-          numericInput("pops", "Populations", value=10, min=1, max=40, step=2),
+          selectInput("startingP",
+                      "Starting variant frequency",
+                      choices=list("One copy"=1, "1%"=2, "5%"=3, "50%"=4)
+                      , selected=4),
+          numericInput("pops", "Replicates", value=10, min=1, max=1000, step=2),
           actionButton("run","Go!")
   )),
   plotOutput("distPlot")
