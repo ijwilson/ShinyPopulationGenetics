@@ -53,6 +53,9 @@ shinyServer(function(input, output) {
       return(numericInput(inputId="s" , label = "Selection coefficient, s", value=0.02, min=0, max=0.2,0.01))
     if (input$selection == "homo_recess") 
       return(numericInput(inputId="s" , label = "Selection coefficient, s", value=0.02, min=0, max=0.2,0.01))
+    if (input$selection == "free")
+      return(list(numericInput(inputId="s" , label = "Selection coefficient, s", value=0.02, min=0, max=1.2,0.01),
+                  numericInput(inputId="t" , label = "Selection coefficient, t", value=0.02, min=0, max=1.2,0.01)))
     return()
   })
   
@@ -72,9 +75,12 @@ shinyServer(function(input, output) {
       sels <- c(1,1+s,1)
     } else if (myselection=="homo_recess") {
       sels <- c(1,1,1-s)
-    } else {
+    } else if (myselection=="positive") {
       sels <- c(1,1+s,1+2*s)
-    }   
+    } else {
+      t <- isolate(input$t)
+      sels <- c(1,s,t)
+    }  
 
     if (startingP==1) {
       start <- c(N-1,1,0) 

@@ -10,8 +10,9 @@ shinyUI(fluidPage(
            selectInput("selection", "Type of Selection", 
                        choices=list("None (pure drift)"="none", 
                                     "Heterozygote Advantage  (1, 1+s, 1)"="het_input",
-                                    "Positive  (1, s, 1+2s)"="positive",
-                                    "Homozygote Recessive  (1, 1, 1-s)"="homo_recess")
+                                    "Positive  (1, 1+s, 1+2s)"="positive",
+                                    "Homozygote Recessive  (1, 1, 1-s)"="homo_recess",
+                                    "Free                  (1, s, t)" = "free")
                        , selected="none"),
             uiOutput("ui")  ## the dynamic ui component
     ),
