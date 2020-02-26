@@ -19,7 +19,7 @@ plotFreqs <- function(flist) {
 
   lapply(flist, plotpoints)
 
-  axis(1, at=1:gens - 0.5, labels=1:gens, tick=FALSE, cex=1.2)
+  axis(1, at=1:gens - 0.5, labels=0:(gens-1), tick=FALSE, cex=1.2)
   axis(2, at=c(0,0.5,1))
 }
 
@@ -53,7 +53,7 @@ shinyServer(function(input, output) {
   output$showSnakes <- renderPlot({
     ## get parameters
     n <- as.integer(isolate(input$n))                 
-    gens <- as.integer(isolate(input$gens))
+    gens <- as.integer(isolate(input$gens))+1
     linecolour <- as.integer(isolate(input$line_colour))
     
     input$run
