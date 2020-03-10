@@ -8,6 +8,13 @@ Shiny applications for teaching population genetics
 |SelectionDriftSimulation | Simulation of Drift and Selection               | 
 
 
+## I have these available at
+
+<http://bgm2058.shinyapps.io/SelectionDriftSimulation>, 
+<http://extrabgm2058.shinyapps.io/SelectionDriftSimulation> and 
+<http://evolutionncl.shinyapps.io/SelectionDriftSimulation>
+
+
 
 ## SnakeDrift
 
