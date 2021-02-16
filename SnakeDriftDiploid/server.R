@@ -25,16 +25,21 @@ plotFreqs <- function(flist) {
 
 plotSnakes <- function(n, gens, colours) {
   freq <- numeric(gens)
+  # blank plot
   plot(1, type="n", ylim=c(1-0.5, n+0.5), xlim=c(0.2, gens), axes=FALSE, ylab="", xlab="")
-  ybottom <- seq((1:n))-0.3
+  ybottom <- seq((1:n))-0.3 + c(0.1, -0.1)
   ytop <- ybottom + 0.6
   ## initial population
   rect(0.2, ybottom, 0.8, ytop, col=colours)
   prev <- 1:n
   freq[1] <- sum(prev <= n/2)/n
   for (i in 2:gens) {
-    samp <- sort(sample(1:n, replace=TRUE))
-    curr <- sort(prev[samp])
+    ## dipoid, so sample is in pairs
+    samp <- sample(1:n, replace=TRUE)
+    
+   # samp <- samp[order(samp[seq(1,2*n,2)])]
+    curr <- prev[samp]
+ #   curr <- prev[order(prev[seq(1,2*n,2)])]
     if (gens<=20)
       arrows(i-1.18, samp , i-0.82, 1:n, lwd=2, length=0.1, col=grey(0.4))  
     rect(i-0.8, ybottom, i-0.2, ytop, col=colours[curr])
@@ -52,7 +57,7 @@ shinyServer(function(input, output) {
 
   output$showSnakes <- renderPlot({
     ## get parameters
-    n <- as.integer(isolate(input$n))                 
+    n <- 2*as.integer(isolate(input$n))   # diploids so double this              
     gens <- as.integer(isolate(input$gens))+1
     linecolour <- as.integer(isolate(input$line_colour))
     

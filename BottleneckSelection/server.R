@@ -121,11 +121,15 @@ shinyServer(function(input, output) {
 
     apply(p, 2, function(x)  {
       succ <- 1+(x[generations]>0) + (x[generations]==1.0);
-      lines(x,col=c(
+      lines(x, col=c(
         rgb(255,0,0, max=255,alpha=alpha),
         rgb(0, 255, 0, max=255, alpha=alpha),
         rgb(0, 0, 255, max=255, alpha=alpha))[succ],lwd=2)
        })
+    
+    v <- var(p[ sum(generations),])
+    
+    text(sum(generations)/2, 0.03, paste("Variance of frequencies at end = ", round(v,3)), cex=2)
 #  text(generations, 0.97, paste(sum(p[generations,]==1),"fixed"),col="black")
 #   text(generations, 0.03, paste(sum(p[generations,]==0),"lost"),col="black")
  

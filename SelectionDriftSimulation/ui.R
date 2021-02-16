@@ -18,7 +18,7 @@ shinyUI(fluidPage(
     ),
     column(4,
            selectInput(inputId = "N", label="Population Size",
-                       choices = list(10,20,50,100,200,500, 1000, 5000)
+                       choices = list(10,20,50,100,200,500, 1000, 2000, 5000)
                        , selected=1000),
            selectInput("startingP",
                        "Starting variant frequency",

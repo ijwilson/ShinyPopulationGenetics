@@ -15,7 +15,7 @@ shinyUI(fluidPage(
                                     "Homozygote Recessive  (1, 1, 1-s)"="homo_recess")
                        , selected="none"),
            selectInput(inputId = "N", label="Standard Population Size",
-                       choices = list(100, 200, 500, 1000, 5000)
+                       choices = list(100, 200, 500, 1000, 2000, 5000)
                        , selected=1000),
 
             uiOutput("ui")  ## the dynamic ui component
